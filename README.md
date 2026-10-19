@@ -16,7 +16,7 @@ Continuação da [Semana 11.B](https://github.com/ptaissa-ai/semana_11B_Flasky),
 | `app/main/errors.py` | Tratadores 404 e 500 |
 | `flasky.py` | Entrada da aplicação e comando `flask test` |
 | `tests/test_basics.py` | Testes, inclusive cadastro e destinatários |
-| `migrations/` | Gerar com `flask db init` (ver abaixo) |
+| `migrations/` | Incluído, com revisão inicial do esquema |
 | `venv/` | Gerar localmente; não versionar |
 
 ## Dados acadêmicos utilizados (preservados da Semana 11.B)
@@ -38,26 +38,24 @@ cp .env.example .env       # Windows: copy .env.example .env
 # Edite .env com chave SendGrid e remetente verificado.
 export FLASK_APP=flasky.py # Windows CMD: set FLASK_APP=flasky.py
 export FLASK_CONFIG=development
-flask db init
-flask db migrate -m "Estrutura inicial"
 flask db upgrade
 flask seed-roles
 flask test
 flask run
 ```
 
-> `flask db init` gera o diretório `migrations/` conforme a Aula 080. O projeto inclui as classes, extensões e modelos necessários; o diretório não vem preenchido para não simular uma migração que ainda não foi criada. Execute os comandos e versione o diretório gerado no GitHub. Não versione `venv`, `.env` ou o banco de dados.
+> O diretório `migrations/` já está versionado e inclui uma revisão inicial com as tabelas `roles`, `users` e `emails_enviados`. Não execute `flask db init` novamente. Faça backup de qualquer banco anterior antes de alterar o esquema.
 
 ## Continuar usando um banco da Semana 11.B
 
-A estrutura das tabelas foi preservada e o banco anterior se encontra em `instance/app.db`. Faça **backup** antes de copiar. Se já existir um banco com as tabelas da Semana 11, não execute uma migração inicial como se fosse banco vazio. Para um esquema comprovadamente idêntico ao dos modelos, gere a revisão inicial com `flask db migrate`, faça revisão do arquivo gerado e use `flask db stamp head` para marcar a revisão sem executar DDL. Depois execute `flask seed-roles`. Para instalações novas, use `flask db upgrade`. Nunca faça stamp sem conferir o esquema.
+A estrutura das tabelas foi preservada e o banco anterior se encontra em `instance/app.db`. Faça **backup** antes de copiar. Se já existir um banco com as tabelas da Semana 11, não execute uma migração inicial como se fosse banco vazio. Para um esquema comprovadamente idêntico ao dos modelos, confira o esquema do banco com a revisão inicial já versionada e só então use `flask db stamp head` para marcar a revisão sem executar DDL. Depois execute `flask seed-roles`. Para instalações novas, use `flask db upgrade`. Nunca faça stamp sem conferir o esquema.
 
 ## PythonAnywhere
 
 1. Crie um repositório novo, por exemplo `semana_12_Flasky`, e envie os arquivos.
 2. No console Bash do PythonAnywhere, use `git clone`, crie/ative `venv` e rode `pip install -r requirements.txt`.
 3. Configure `.env` **privado** no diretório do projeto com chave SendGrid e remetente verificado. Na conta gratuita, valide o acesso HTTP à API.
-4. Execute `flask db upgrade` e `flask seed-roles` no console (crie a revisão inicial antes, se ainda não existir).
+4. Execute `flask db upgrade` e `flask seed-roles` no console (a revisão inicial já está no repositório).
 5. Na aba **Web**, configure a versão Python, o caminho do virtualenv e o arquivo WSGI. Use `wsgi_pythonanywhere.py` como exemplo, trocando `SEU_USUARIO` e ajustando os caminhos.
 6. Clique em **Reload** e teste cadastro e `/emailsEnviados`.
 
@@ -65,4 +63,10 @@ A estrutura das tabelas foi preservada e o banco anterior se encontra em `instan
 
 ## Testes
 
-`flask test` executa 6 testes: existência da aplicação, ambiente de testes, página inicial, notificação aos dois destinatários, cadastro duplicado e falha de envio. O serviço externo é simulado por mock: não envia e-mails reais durante os testes.
+`flask test` executa 7 testes: existência da aplicação, ambiente de testes, página inicial, notificação aos dois destinatários, cadastro duplicado e falha de envio. O serviço externo é simulado por mock: não envia e-mails reais durante os testes.
+
+## Adequação adicional à Aula 080
+
+A página inicial agora utiliza `session['name']` e `session['known']` como no exemplo do professor: um usuário novo recebe saudação de boas-vindas após a aceitação do envio; um nome já cadastrado recebe mensagem de retorno, sem gerar outra notificação.
+
+O diretório `migrations/` foi preparado a partir dos modelos atuais. **A migração ainda precisa ser validada com `flask db upgrade` em uma instalação limpa e `flask test` em ambiente com as dependências instaladas.** Não foi executada neste ambiente. Para preservar bancos existentes, compare o esquema antes de usar `flask db stamp head`.
