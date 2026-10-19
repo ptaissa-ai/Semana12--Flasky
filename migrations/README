@@ -1,0 +1,1 @@
+Migrações da Semana 12 (Flask-Migrate / Alembic). A revisão inicial reflete os modelos Role, User e EmailEnviado. Em banco existente da Semana 11.B, faça backup e valide o esquema antes de executar `flask db stamp head` em vez de `flask db upgrade`.
