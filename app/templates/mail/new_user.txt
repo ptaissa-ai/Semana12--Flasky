@@ -1,0 +1,6 @@
+Novo usuário cadastrado — Semana 12
+
+Prontuário: {{ student_id }}
+Nome da aluna: {{ student_name }}
+Usuário cadastrado: {{ user.username }}
+Função: {{ user.role.name }}
