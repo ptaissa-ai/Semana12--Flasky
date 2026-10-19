@@ -1,4 +1,4 @@
-from flask import current_app, flash, redirect, render_template, url_for
+from flask import current_app, flash, redirect, render_template, url_for, session
 from sqlalchemy.exc import IntegrityError
 from . import main
 from .forms import NameForm
@@ -11,8 +11,11 @@ def index():
     form = NameForm()
     if form.validate_on_submit():
         username = form.username.data.strip()
-        if User.query.filter_by(username=username).first():
-            flash('Esse usuário já está cadastrado.', 'warning')
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            session['name'] = existing_user.username
+            session['known'] = True
+            flash('Bem-vindo novamente! Esse usuário já está cadastrado.', 'info')
             return redirect(url_for('.index'))
         role = Role.query.filter_by(name='User').first()
         if role is None:
@@ -21,7 +24,6 @@ def index():
         user = User(username=username, role=role)
         db.session.add(user)
         try:
-            # Envio obrigatório para os dois endereços em CADA novo cadastro.
             recipients = [current_app.config['STUDENT_EMAIL'], current_app.config['FLASKY_ADMIN']]
             sent_to, subject = send_email(
                 recipients, 'Novo usuário cadastrado - Semana 12', 'mail/new_user',
@@ -35,6 +37,8 @@ def index():
                     nome_aluno=current_app.config['STUDENT_NAME'],
                 ))
             db.session.commit()
+            session['name'] = username
+            session['known'] = False
             flash('Usuário cadastrado e envio aceito para os dois destinatários.', 'success')
         except (EmailConfigurationError, EmailDeliveryError, IntegrityError):
             db.session.rollback()
@@ -43,10 +47,13 @@ def index():
         return redirect(url_for('.index'))
     elif form.is_submitted():
         flash('Confira o nome informado e envie novamente.', 'danger')
-    return render_template('index.html', form=form,
-                           users=User.query.order_by(User.id.desc()).all(),
-                           total_users=User.query.count(), total_roles=Role.query.count(),
-                           total_emails=EmailEnviado.query.count())
+    return render_template(
+        'index.html', form=form, name=session.get('name'),
+        known=session.get('known', False),
+        users=User.query.order_by(User.id.desc()).all(),
+        total_users=User.query.count(), total_roles=Role.query.count(),
+        total_emails=EmailEnviado.query.count(),
+    )
 
 @main.route('/emailsEnviados')
 def emails_enviados():
