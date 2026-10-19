@@ -1,1 +1,42 @@
-{% extends 'base.html' %}{% block content %}<section class="hero"><p class="eyebrow">Aplicação modular · Flask</p><h1>Cadastro de usuários</h1><p>Semana 12 — Evolução da aplicação da Semana 11.B.</p></section><section class="stats"><div><strong>{{ total_users }}</strong><span>Usuários</span></div><div><strong>{{ total_roles }}</strong><span>Funções</span></div><div><strong>{{ total_emails }}</strong><span>Notificações registradas</span></div></section><section class="panel"><h2>Novo usuário</h2><p>O cadastro notifica automaticamente o professor e o e-mail institucional da aluna.</p><form method="post">{{ form.hidden_tag() }}<label for="username">{{ form.username.label.text }}</label>{{ form.username(id='username', placeholder='Digite o nome do usuário', autocomplete='off') }}{% for error in form.username.errors %}<small class="error">{{ error }}</small>{% endfor %}{{ form.submit(class_='button') }}</form></section><section class="panel"><h2>Usuários cadastrados</h2>{% if users %}<div class="table-wrap"><table><thead><tr><th>ID</th><th>Usuário</th><th>Função</th></tr></thead><tbody>{% for user in users %}<tr><td>{{ user.id }}</td><td>{{ user.username }}</td><td>{{ user.role.name }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<p>Nenhum usuário cadastrado ainda.</p>{% endif %}</section>{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Aplicação modular · Flask</p>
+  {% if name %}
+    {% if known %}
+      <h1>Olá novamente, {{ name }}!</h1>
+      <p>Seu nome já está cadastrado em nossa aplicação.</p>
+    {% else %}
+      <h1>Olá, {{ name }}!</h1>
+      <p>Prazer em conhecer você. Seu cadastro foi realizado.</p>
+    {% endif %}
+  {% else %}
+    <h1>Olá, visitante!</h1>
+    <p>Informe seu nome abaixo para se apresentar, como no exemplo da Aula 080.</p>
+  {% endif %}
+  <p>Semana 12 — Evolução modular da aplicação da Semana 11.B.</p>
+</section>
+<section class="stats">
+  <div><strong>{{ total_users }}</strong><span>Usuários</span></div>
+  <div><strong>{{ total_roles }}</strong><span>Funções</span></div>
+  <div><strong>{{ total_emails }}</strong><span>Notificações registradas</span></div>
+</section>
+<section class="panel">
+  <h2>Informe seu nome</h2>
+  <p>Um novo cadastro notifica automaticamente o professor e o e-mail institucional da aluna. Nomes existentes apenas recebem uma saudação.</p>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <label for="username">{{ form.username.label.text }}</label>
+    {{ form.username(id='username', placeholder='Digite o nome do usuário', autocomplete='off') }}
+    {% for error in form.username.errors %}<small class="error">{{ error }}</small>{% endfor %}
+    {{ form.submit(class_='button') }}
+  </form>
+</section>
+<section class="panel">
+  <h2>Usuários cadastrados</h2>
+  {% if users %}
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Usuário</th><th>Função</th></tr></thead>
+    <tbody>{% for user in users %}<tr><td>{{ user.id }}</td><td>{{ user.username }}</td><td>{{ user.role.name }}</td></tr>{% endfor %}</tbody></table></div>
+  {% else %}<p>Nenhum usuário cadastrado ainda.</p>{% endif %}
+</section>
+{% endblock %}
