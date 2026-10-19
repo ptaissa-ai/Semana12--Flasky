@@ -14,7 +14,7 @@
     <h1>Olá, visitante!</h1>
     <p>Informe seu nome abaixo para se apresentar, como no exemplo da Aula 080.</p>
   {% endif %}
-  <p>Semana 12 — Evolução modular da aplicação da Semana 11.B.</p>
+  
 </section>
 <section class="stats">
   <div><strong>{{ total_users }}</strong><span>Usuários</span></div>
@@ -23,7 +23,6 @@
 </section>
 <section class="panel">
   <h2>Informe seu nome</h2>
-  <p>Um novo cadastro notifica automaticamente o professor e o e-mail institucional da aluna. Nomes existentes apenas recebem uma saudação.</p>
   <form method="post">
     {{ form.hidden_tag() }}
     <label for="username">{{ form.username.label.text }}</label>
